@@ -13,11 +13,13 @@ class Stocks(Perimeter):
     def __init__(self, tag_date: date = None, username: str = None):
         super().__init__("stocks", tag_date, username)
         self.name = f"perimeter-stocks"
+        self.set_dataset_df()
 
     def __download_nasdaq(self) -> pd.DataFrame:
         """
         Returns a DataFrame of NASDAQ stocks
         """
+        print("download_nasdaq")
         url = "https://api.nasdaq.com/api/screener/stocks?tableonly=true&download=true"
         response = retry_get(url, headers=nasdaq_headers(), mode="curl")
         json_data = response.json()
@@ -49,12 +51,15 @@ class Stocks(Perimeter):
             },
             inplace=True,
         )
+        print(df);
         return df
 
     def __download_sp500(self) -> pd.DataFrame:
-        dataset = load_dataset("edarchimbaud/perimeter-sp500")
+        print("download_sp500")
+        dataset = load_dataset("chuyin0321/perimeter-sp500")
         df = dataset["train"].to_pandas()
         df = df[["symbol", "security", "gics_sector", "gics_sub_industry"]]
+        print(df);
         return df
 
     def __download(self) -> pd.DataFrame:
@@ -68,6 +73,7 @@ class Stocks(Perimeter):
             subset=["symbol"], keep="first"
         )
         max_number_of_stocks = 1500
+        print("generated ", max_number_of_stocks, "stock perimeters ... ");
         self.dataset_df = self.dataset_df.head(max_number_of_stocks)
         self.dataset_df.reset_index(drop=True, inplace=True)
 

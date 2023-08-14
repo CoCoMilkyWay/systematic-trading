@@ -35,7 +35,8 @@ class Timeseries1mn(Raw):
 
     def append_frame(self, symbol: str):
         ticker = self.symbol_to_ticker(symbol)
-        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?region=US&lang=en-US&includePrePost=false&interval=1m&useYfid=true&range=1d&corsDomain=finance.yahoo.com&.tsrc=finance"
+        print(ticker);
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?region=US&lang=en-US&includePrePost=false&interval=1m&useYfid=true&range=max&corsDomain=finance.yahoo.com&.tsrc=finance"
         try:
             response = retry_get(url)
         except:
@@ -67,6 +68,6 @@ if __name__ == "__main__":
     symbol = "AAPL"
     suffix = "stocks"
     tag_date = datetime(2023, 5, 26).date()
-    username = "edarchimbaud"
+    username = "chuyin0321"
     dataset = Timeseries1mn(suffix=suffix, tag_date=tag_date, username=username)
     dataset.append_frame(symbol)

@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 import textract
 from tqdm import tqdm
 from webdriver_manager.chrome import ChromeDriverManager
@@ -43,9 +45,9 @@ class SsrnAbstractCrawler:
 
     def __go_to_page(self, page: int):
         self._driver.find_element(
-            "xpath", '//input[@aria-label="Go to page"]'
+            By.XPATH, '//input[@aria-label="Go to page"]'
         ).send_keys(page)
-        self._driver.find_element("xpath", '//button[@aria-label="Go"]').click()
+        self._driver.find_element(By.XPATH, '//button[@aria-label="Go"]').click()
 
     def from_jel_code(self, jel_code: str, from_page: int = 1):
         """
@@ -57,20 +59,23 @@ class SsrnAbstractCrawler:
         options = Options()
         options.headless = True
         options.add_argument("user-agent=" + headers["User-Agent"])
+        service = Service(executable_path=ChromeDriverManager().install())
         self._driver = webdriver.Chrome(
-            ChromeDriverManager().install(), options=options
+            service=service, 
+            options=options
         )
         self._driver.get("https://papers.ssrn.com/sol3/DisplayAbstractSearch.cfm")
-        self._driver.find_element_by_id("onetrust-accept-btn-handler").click()
-        self._driver.find_element_by_id("advanced_search").send_keys(jel_code)
-        self._driver.find_element_by_id("srchCrit2").find_element_by_xpath("..").click()
+        ##cookie acceptance button
+        self._driver.find_element(By.CSS_SELECTOR, "button#onetrust-accept-btn-handler").click()
+        self._driver.find_element(By.ID, "advanced_search").send_keys(jel_code)
+        self._driver.find_element(By.ID, "srchCrit2").find_element(By.XPATH,"..").click()
         self._driver.find_element(
-            "xpath", '//button[contains(@class, "primary")]'
+            By.XPATH, '//button[contains(@class, "primary")]'
         ).click()
         for page in range(from_page, 200 + 1):
             self.__go_to_page(page)
             print(f"{page} / 200")
-            body = self._driver.find_element("xpath", "//body")
+            body = self._driver.find_element(By.XPATH, "//body")
             body_html = body.get_attribute("innerHTML")
             soup = BeautifulSoup(body_html, "html.parser")
             a_tags = soup.find_all("a", {"class": "title optClickTitle"})

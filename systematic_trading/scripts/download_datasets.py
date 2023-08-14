@@ -50,15 +50,19 @@ def download_raw_datasets(raw_datasets: dict, tag_date: date, username: str):
         for k, v in raw_datasets.items()
         if not v.check_file_exists(tag=tag_date.isoformat())
     }
+    print("loading local database ...")
     for name in raw_datasets_to_update:
         raw_datasets_to_update[name].load_frames()
     perimeter = Stocks(tag_date=tag_date, username=username)
-    for symbol in tqdm(perimeter.symbols):
+    print("updating local database ...")
+    for symbol in tqdm(perimeter.dataset_df["symbol"]):
         for name in raw_datasets_to_update:
+            print(symbol,": ",name);
             if symbol in raw_datasets_to_update[name].frames:
                 continue
             raw_datasets_to_update[name].append_frame(symbol)
             raw_datasets_to_update[name].save_frames()
+    print("uploading local database ...")
     for name in raw_datasets_to_update:
         raw_datasets_to_update[name].set_dataset_df()
         raw_datasets_to_update[name].to_hf_datasets()
@@ -131,6 +135,8 @@ def download(slot: str, timeoffset: int = 0):
     us_market_open_time = nyc_time.replace(hour=9, minute=30, second=0, microsecond=0)
     us_market_close_time = nyc_time.replace(hour=16, minute=0, second=0, microsecond=0)
     tag_date = date.today() + timedelta(days=timeoffset)
+    print(date.today());
+    print(tag_date);
     username = os.environ.get("HF_USERNAME")
     pprint(
         {
@@ -173,7 +179,7 @@ def main(mode: str, slot: str, timeoffset: int):
             download(slot=slot, timeoffset=timeoffset)
         except Exception as e:
             print(e)
-            send_sms(f"Error: {e}")
+            # send_sms(f"Error: {e}")
 
 
 if __name__ == "__main__":

@@ -32,11 +32,14 @@ class Raw(Dataset):
     def load_frames(self):
         file_path = self.get_cache_path()
         if os.path.exists(file_path):
+            open(file_path).close()
             with open(file_path, "rb") as file:
+                print("Lock R: ", file_path);
                 self.frames = pickle.load(file)
 
     def save_frames(self):
         file_path = self.get_cache_path()
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, "wb") as file:
+            # print("Lock W:", file_path);
             pickle.dump(self.frames, file)

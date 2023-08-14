@@ -2,9 +2,10 @@ import click
 
 from systematic_trading.strategy_ideas.ssrn_abstract_crawler import SsrnAbstractCrawler
 from systematic_trading.strategy_ideas.ssrn_paper_crawler import SsrnPaperCrawler
-from systematic_trading.strategy_ideas.ssrn_paper_summary_crawler import (
+from systematic_trading.strategy_ideas.ssrn_paper_summarizer import SsrnPaperSummarizer
+'''from systematic_trading.strategy_ideas.ssrn_paper_summary_crawler import (
     SsrnPaperSummaryCrawler,
-)
+)'''
 
 
 @click.command()
@@ -16,7 +17,7 @@ from systematic_trading.strategy_ideas.ssrn_paper_summary_crawler import (
     "--src-kili-project-id", default="", help="Kili project id to read the data"
 )
 @click.option(
-    "--tgt-folder", default="data/summaries", help="Folder to save the summaries"
+    "--target-folder", default="data/summaries", help="Folder to save the summaries"
 )
 def main(
     mode: str,
