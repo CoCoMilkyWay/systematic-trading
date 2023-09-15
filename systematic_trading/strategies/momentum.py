@@ -204,11 +204,11 @@ def main():
             [sector, ": ", str(num_sym_in_sector)]))
         plt.gcf().canvas.draw()
         plt.savefig("./figure/momentum.pdf")  # save partial results
-        plt.savefig("./figure/acce.png", dpi=1300)
+        plt.savefig("./figure/momentum.png", dpi=1300)
         plt.legend()
         plt.pause(1)
     plt.savefig("./figure/momentum.pdf")
-    plt.savefig("./figure/acce.png", dpi=1300)
+    plt.savefig("./figure/momentum.png", dpi=1300)
     plt.show(block=True)
 
 
